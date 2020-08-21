@@ -1,5 +1,5 @@
 variable "identifier" {
-  default = "app005"
+  default = "kvdemo001"
 }
 
 variable "resourceGroupName" {

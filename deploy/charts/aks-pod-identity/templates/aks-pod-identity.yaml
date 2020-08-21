@@ -1,0 +1,103 @@
+apiVersion: "aadpodidentity.k8s.io/v1"
+kind: AzureIdentity
+metadata:
+  name: aks-pod-identity
+spec:
+  type: 0
+  resourceID: /subscriptions/{{ .Values.SubscriptionId }}/resourcegroups/{{ .Values.ResourceGroupName }}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/{{ .Values.IdentityName }}
+  clientID: {{ .Values.IdentityClientId }}
+---
+apiVersion: "aadpodidentity.k8s.io/v1"
+kind: AzureIdentityBinding
+metadata:
+  name: aks-pod-identity-binding
+spec:
+  azureIdentity: aks-pod-identity
+  selector: {{ .Values.IdentitySelector }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aks-pod-identity
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: aks-pod-identity
+  template:
+    metadata:
+      labels:
+        app: aks-pod-identity
+        aadpodidbinding: {{ .Values.IdentitySelector }}
+    spec:
+      containers:
+      - name: aks-pod-identity
+        image: {{ .Values.Image }}
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 250m
+            memory: 256Mi
+        ports:
+        - containerPort: 80
+        - containerPort: 443
+        env:
+        # - name: SQL-DATABASE
+        #   value: {{ .Values.SqlDatabase }}
+        # - name: ASPNETCORE_URLS
+        #   value: "http://+:80"
+        - name: KeyVaultName
+          value:  {{ .Values.KeyVaultName }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: aks-pod-identity
+  labels:
+    app: aks-pod-identity
+    tier: aks-pod-identity
+spec:
+  type: NodePort
+  ports:
+  - port: 80
+  selector:
+    app: aks-pod-identity
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: hello-world-ingress-static
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    cert-manager.io/cluster-issuer: letsencrypt
+spec:
+  tls:
+  - hosts:
+    - {{ .Values.fqdn }}
+    secretName: tls-secret
+  rules:
+  - host: {{ .Values.fqdn }}
+    http:
+      paths:
+      - backend:
+          serviceName: aks-pod-identity
+          servicePort: 80
+        path: /
+---
+apiVersion: cert-manager.io/v1alpha2
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt
+spec:
+  acme:
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: {{ .Values.emailAddress }}
+    privateKeySecretRef:
+      name: letsencrypt
+    solvers:
+    - http01:
+        ingress:
+          class: nginx

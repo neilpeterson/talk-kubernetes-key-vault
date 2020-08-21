@@ -1,0 +1,11 @@
+replicaCount: 1
+SqlDatabase: aks-pod-identity
+SubscriptionId: 
+ResourceGroupName: 
+IdentityName:
+IdentitySelector: keyvault
+IdentityClientId:
+Image: neilpeterson/aspnet-keyvault-demo
+KeyVaultName:
+emailAddress: janedoe@contoso.com
+fqdn:

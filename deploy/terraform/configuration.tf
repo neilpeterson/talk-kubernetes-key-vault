@@ -49,7 +49,7 @@ resource "azurerm_template_deployment" "domaindata" {
         }
     },
     "variables": {
-        "script": "https://gist.githubusercontent.com/neilpeterson/320c6356453dd913c87253ba09731151/raw/1dbc247e754316e9e1805a40da7a66d905defd07/pro-template-cis-driver.ps1"
+        "script": "https://raw.githubusercontent.com/neilpeterson/talk-kubernetes-key-vault/master/deploy/terraform/botstrap.ps1"
     },
     "resources": [
         {

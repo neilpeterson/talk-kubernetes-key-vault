@@ -1,0 +1,57 @@
+apiVersion: "aadpodidentity.k8s.io/v1"
+kind: AzureIdentity
+metadata:
+  name: <CHOOSE_A_NAME:i.e.aks-pod-identity>
+spec:
+  type: 0
+  resourceID: /subscriptions/<POD_IDENTITY_SUBSCRIPTION_ID>/resourcegroups/<POD_IDENTITY_RESOURCE_GROUP>/providers/Microsoft.ManagedIdentity/userAssignedIdentities/<POD_IDENTITY_NAME>
+  clientID: <POD_IDENTITY_CLIENT_ID>
+---
+apiVersion: "aadpodidentity.k8s.io/v1"
+kind: AzureIdentityBinding
+metadata:
+  name: <CHOOSE_A_NAME:i.e.aks-pod-identity-binding>
+spec:
+  azureIdentity: <MATCH_AZUREIDENTITY_NAME:i.e.aks-pod-identity>
+  selector: <CHOOSE_A_SELECTOR_NAME:i.e.keyvault>
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: <CHOOSE_A_DEPLOYMENT_NAME:i.e.aspnetk8s-deployment>
+  labels:
+    app: <CHOOSE_AN_APP_LABEL:i.e.aspnetk8s-kub-app>
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+        app: <MATCH_APP_LABEL:i.e.aspnetk8s-kub-app>
+  template:
+    metadata:
+      name: <CHOOSE_A_TEMPLATE_NAME. i.e.aspnetk8s-kub-app-template>
+      labels:
+        app: <CHOOSE_A_APP_LABEL:aspnetk8s-kub-app>
+        aadpodidbinding: <MATCH_AZUREIDENTITYBIDING_LABEL:i.e.keyvault>
+    spec:
+      containers:
+        - name: <CHOOSE_A_CONTAINER_NAME:i.e.aspnetk8s-services-app>
+          image: <DOCKER_IMAGE:i.e.youracrname.azurecr.io/aspnetk8s:v2>
+          ports:
+            - containerPort: 80
+          env:
+            - name: KEYVAULT_ENDPOINT
+              value: "https://cawa-keyvault.vault.azure.net/"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+    name: <YOUR_SERVICE_NAME:i.e.aspnetk8s-kub-app>
+spec:
+  ports:
+    - name: http-port
+      port: 80
+      targetPort: 80
+  selector:
+    app: <MATCH_DEPLOYED_APP_NAME:i.e.aspnetk8s-kub-app>
+  type: LoadBalancer

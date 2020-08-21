@@ -7,7 +7,7 @@ output "_2" {
 }
 
 output "_3" {
-  value = "az acr build --registry ${azurerm_container_registry.acr.name} -f Dockerfile --image aspnet-keyvault-demo:v1 ."
+  value = "az acr build --registry ${azurerm_container_registry.acr.name} -f aspnet-k8s/Dockerfile --image aspnet-keyvault-demo:v1 ."
 }
 
 output "_4" {

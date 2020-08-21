@@ -1,5 +1,5 @@
 variable "identifier" {
-  default = "kvdemo007"
+  default = "kvdemo008"
 }
 
 variable "resourceGroupName" {

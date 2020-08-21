@@ -4,8 +4,8 @@ metadata:
   name: aks-pod-identity
 spec:
   type: 0
-  resourceID: /subscriptions/10a09851-d632-420e-ad20-2cd774fd4d41/resourceGroups/rg-kvdemo001/providers/Microsoft.ManagedIdentity/userAssignedIdentities/aks-pod-identity
-  clientID: 6241f367-d87c-478f-880f-6cd2d4110c6e
+  resourceID: /subscriptions/10a09851-d632-420e-ad20-2cd774fd4d41/resourceGroups/rg-kvdemo003/providers/Microsoft.ManagedIdentity/userAssignedIdentities/aks-pod-identity
+  clientID: 1eb08d48-1f3b-46ea-8b90-ca8639d4cb81
 ---
 apiVersion: "aadpodidentity.k8s.io/v1"
 kind: AzureIdentityBinding
@@ -40,18 +40,18 @@ spec:
             - containerPort: 80
           env:
             - name: KEYVAULT_ENDPOINT
-              value: "https://protemp-kv001kvdemo001.vault.azure.net/"
+              value: "https://protemp-kv001kvdemo003.vault.azure.net/"
 
----
-apiVersion: v1
-kind: Service
-metadata:
-    name: aspnet-keyvault-demo
-spec:
-  ports:
-    - name: http-port
-      port: 80
-      targetPort: 80
-  selector:
-    app: aspnet-keyvault-demo
-  type: LoadBalancer
+# ---
+# apiVersion: v1
+# kind: Service
+# metadata:
+#     name: aspnet-keyvault-demo
+# spec:
+#   ports:
+#     - name: http-port
+#       port: 80
+#       targetPort: 80
+#   selector:
+#     app: aspnet-keyvault-demo
+#   type: LoadBalancer

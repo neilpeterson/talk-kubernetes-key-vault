@@ -1,3 +1,5 @@
+#See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
+
 FROM mcr.microsoft.com/dotnet/core/aspnet:3.0-buster-slim AS base
 WORKDIR /app
 EXPOSE 80
@@ -5,7 +7,7 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/core/sdk:3.0-buster AS build
 WORKDIR /src
-COPY ["/aspnet-k8s/aspnet-k8s.csproj", "aspnet-k8s/"]
+COPY ["aspnet-k8s/aspnet-k8s.csproj", "aspnet-k8s/"]
 RUN dotnet restore "aspnet-k8s/aspnet-k8s.csproj"
 COPY . .
 WORKDIR "/src/aspnet-k8s"

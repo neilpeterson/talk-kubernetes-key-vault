@@ -1,20 +1,8 @@
-# resource "azurerm_key_vault_secret" "sqlServerEndpoint" {
-#   name         = "SQL-SERVER-NAME"
-#   value        = azurerm_sql_server.sql.fully_qualified_domain_name
-#   key_vault_id = azurerm_key_vault.keyvault.id
-# }
-
-# resource "azurerm_key_vault_secret" "sqlServerAdminName" {
-#   name         = "SQL-USER-NAME"
-#   value        = var.sqlServerAdminName
-#   key_vault_id = azurerm_key_vault.keyvault.id
-# }
-
-# resource "azurerm_key_vault_secret" "sqlServerAdminPassword" {
-#   name         = "SQL-PASSWORD"
-#   value        = var.sqlServerAdminPassword
-#   key_vault_id = azurerm_key_vault.keyvault.id
-# }
+resource "azurerm_key_vault_secret" "kvsecret" {
+  name         = "kvsecret"
+  value        = "Hello World From Key Vault"
+  key_vault_id = azurerm_key_vault.keyvault.id
+}
 
 # Deployment script is used to create the domaindata table in the Azure SQL DB and boot strap AKS
 resource "azurerm_template_deployment" "domaindata" {

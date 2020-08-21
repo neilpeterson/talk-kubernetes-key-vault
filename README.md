@@ -12,8 +12,8 @@ Ensure both the Azure CLI, Terraform, and Docker are installed on your developme
 Run these commands to deploy / configure the infrastructure. When prompted, type 'yes' and hit enter.
 
 ```
-terraform init aks-deployment/
-terraform apply aks-deployment/
+terraform init deploy/terraform/
+terraform apply deploy/terraform/
 ```
 
 ## AAD Pod Identity

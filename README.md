@@ -1,9 +1,4 @@
-Creates an AKS cluster + configurations for hosting the pro-template scaffolding api. Some features:
-
-- AKS is using [POD identity](https://docs.microsoft.com/en-us/azure/aks/operator-best-practices-identity#use-pod-identities) to securely access Azure Key Vault to retrieve connection strings / keys.
-- AKS is using an [NGINX ingress controller + cert manager](https://docs.microsoft.com/en-us/azure/aks/ingress-tls) to dynamically generate certificates (Lets Encrypt) and provide TLS termination.
-- An Azure Resource Manager Deployment Script resource is used to perform many Azure data-plane configurations (configure pod identity, configure ingress controller).
-- Helm is used to deploy the pro-template scaffolding application.
+# AKS > Key Vault Demos
 
 ## Quickstart
 
@@ -38,3 +33,14 @@ kubectl get azureidentitybinding
 ## .Net Core Key Vault configuration provider
 
 [Documentation](https://docs.microsoft.com/en-us/aspnet/core/security/key-vault-configuration?view=aspnetcore-3.1)
+
+*Demo Steps**
+
+- Show app and Key Vault configuration provider code
+- Run app locally
+- Show appsettings.ini
+- Run Helm chart
+- App should use the value from appsettings.json
+- Add Key Vault secret with name `kvsecret`
+- Restart pod
+- App should now reflect value from Key Vault

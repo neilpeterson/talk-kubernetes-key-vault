@@ -39,6 +39,7 @@ namespace aspnet_k8s
                     webBuilder.UseStartup<Startup>();
                 });
 
+        // Grab Key Vault endpoint from environment variable
         private static string GetKeyVaultEndpoint() => Environment.GetEnvironmentVariable("KEYVAULT_ENDPOINT");
     }
 }

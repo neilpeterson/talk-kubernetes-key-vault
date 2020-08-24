@@ -1,8 +1,8 @@
-# resource "azurerm_key_vault_secret" "kvsecret" {
-#   name         = "kvsecret"
-#   value        = "Hello World From Key Vault"
-#   key_vault_id = azurerm_key_vault.keyvault.id
-# }
+resource "azurerm_key_vault_secret" "kvsecret" {
+  name         = "kvsecret"
+  value        = "Hello World From Key Vault"
+  key_vault_id = azurerm_key_vault.keyvault.id
+}
 
 # Deployment script is used to create the domaindata table in the Azure SQL DB and boot strap AKS
 resource "azurerm_template_deployment" "domaindata" {

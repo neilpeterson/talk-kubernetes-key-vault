@@ -1,0 +1,131 @@
+apiVersion: "aadpodidentity.k8s.io/v1"
+kind: AzureIdentity
+metadata:
+  name: aks-pod-identity
+spec:
+  type: 0
+  resourceID: /subscriptions/{{ .Values.SubscriptionId }}/resourcegroups/{{ .Values.ResourceGroupName }}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/{{ .Values.IdentityName }}
+  clientID: {{ .Values.IdentityClientId }}
+---
+apiVersion: "aadpodidentity.k8s.io/v1"
+kind: AzureIdentityBinding
+metadata:
+  name: aks-pod-identity-binding
+spec:
+  azureIdentity: aks-pod-identity
+  selector: {{ .Values.IdentitySelector }}
+---
+apiVersion: secrets-store.csi.x-k8s.io/v1alpha1
+kind: SecretProviderClass
+metadata:
+  name: azure-keyvault
+spec:
+  provider: azure
+  parameters:
+    usePodIdentity: "true"
+    # keyvaultName: {{ .Values.KeyVaultName }}
+    keyvaultName: protemp-kv001kvdemo600
+    objects:  |
+      array:
+        - |
+          objectName: kvsecret
+          objectType: secret
+    resourceGroup: {{ .Values.ResourceGroupName }}
+    subscriptionId: {{ .Values.SubscriptionId }}
+    tenantId: {{ .Values.TenantId }}
+  # secretObjects:
+  # - secretName: kvsecret
+  #   type: Opaque
+  #   data:
+  #   - key: kvsecret
+  #     objectName: kvsecret
+---                  
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kvsecret
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: kvsecret
+  template:
+    metadata:
+      labels:
+        app: kvsecret
+        aadpodidbinding: {{ .Values.IdentitySelector }}
+    spec:
+      containers:
+      - name: kvsecret
+        image: {{ .Values.Image }}
+        ports:
+        - containerPort: 80
+        - containerPort: 443
+        # env:
+        # - name: kvsecret
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: kvsecret
+        #       key: kvsecret
+        volumeMounts:
+          - name: secrets-store-inline
+            mountPath: "/mnt/secrets-store"
+            readOnly: true
+      volumes:
+        - name: secrets-store-inline
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: azure-keyvault
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kvsecret
+  labels:
+    app: kvsecret
+    tier: kvsecret
+spec:
+  type: NodePort
+  ports:
+  - port: 80
+  selector:
+    app: kvsecret
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: hello-world-ingress-static
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    cert-manager.io/cluster-issuer: letsencrypt
+spec:
+  tls:
+  - hosts:
+    - {{ .Values.fqdn }}
+    secretName: tls-secret
+  rules:
+  - host: {{ .Values.fqdn }}
+    http:
+      paths:
+      - backend:
+          serviceName: kvsecret
+          servicePort: 80
+        path: /
+---
+apiVersion: cert-manager.io/v1alpha2
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt
+spec:
+  acme:
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: {{ .Values.emailAddress }}
+    privateKeySecretRef:
+      name: letsencrypt
+    solvers:
+    - http01:
+        ingress:
+          class: nginx

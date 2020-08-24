@@ -45,5 +45,5 @@ bash -c "helm repo update"
 bash -c "helm install cert-manager --version v0.13.0 jetstack/cert-manager"
 
 # Install Secret Store CSI driver
-# bash -c "helm repo add csi-secrets-store-provider-azure https://raw.githubusercontent.com/Azure/secrets-store-csi-driver-provider-azure/master/charts"
-# bash -c "helm install csi-secrets-store-provider-azure/csi-secrets-store-provider-azure --generate-name"
+bash -c "helm repo add csi-secrets-store-provider-azure https://raw.githubusercontent.com/Azure/secrets-store-csi-driver-provider-azure/master/charts"
+bash -c "helm install csi-secrets-store-provider-azure/csi-secrets-store-provider-azure --generate-name"

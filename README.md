@@ -37,11 +37,4 @@ Get values from Azure Key Vault and mount them into Kubernetes pods.
 - Mounts secrets, keys, and certificates as [Container Storage Interface (CSI) volumes](https://github.com/kubernetes-sigs/secrets-store-csi-driver)
 - Mount multiple secrets as a single volume
 - Using [Azure Active Directory Pod Identity](https://github.com/Azure/aad-pod-identity) for Key Vault access
-- Supports sync with Kubernetes Secrets 
-
-**Installation**
-
-```
-helm repo add csi-secrets-store-provider-azure https://raw.githubusercontent.com/Azure/secrets-store-csi-driver-provider-azure/master/charts
-helm install csi-secrets-store-provider-azure/csi-secrets-store-provider-azure --generate-name
-```
+- Supports sync with Kubernetes Secrets

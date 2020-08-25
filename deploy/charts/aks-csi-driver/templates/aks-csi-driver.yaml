@@ -23,8 +23,7 @@ spec:
   provider: azure
   parameters:
     usePodIdentity: "true"
-    # keyvaultName: {{ .Values.KeyVaultName }}
-    keyvaultName: protemp-kv001kvdemo600
+    keyvaultName: {{ .Values.KeyVaultName }}
     objects:  |
       array:
         - |
@@ -33,12 +32,12 @@ spec:
     resourceGroup: {{ .Values.ResourceGroupName }}
     subscriptionId: {{ .Values.SubscriptionId }}
     tenantId: {{ .Values.TenantId }}
-  # secretObjects:
-  # - secretName: kvsecret
-  #   type: Opaque
-  #   data:
-  #   - key: kvsecret
-  #     objectName: kvsecret
+  secretObjects:
+  - secretName: kvsecret
+    type: Opaque
+    data:
+    - key: kvsecret
+      objectName: kvsecret
 ---                  
 apiVersion: apps/v1
 kind: Deployment
@@ -61,12 +60,12 @@ spec:
         ports:
         - containerPort: 80
         - containerPort: 443
-        # env:
-        # - name: kvsecret
-        #   valueFrom:
-        #     secretKeyRef:
-        #       name: kvsecret
-        #       key: kvsecret
+        env:
+        - name: kvsecret
+          valueFrom:
+            secretKeyRef:
+              name: kvsecret
+              key: kvsecret
         volumeMounts:
           - name: secrets-store-inline
             mountPath: "/mnt/secrets-store"
